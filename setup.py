@@ -16,15 +16,13 @@ from setuptools import find_packages,setup
 def get_requirements()->List[str]:
     "this function will return list of requirements"
     requirement_list = []
-
-
     try:
         with open("requirements.txt","r") as  file:
             lines = file.readlines()
             for line in lines:
                 requirement = line.strip()
                 
-                ## "-e ." is responsible for triggering the setup.py and build all packages
+                ## "-e ." is responsible for triggering the setup.py and install the libraries from pip.
                 ## ignoring the empty lines and "-e ."
                 if requirement and requirement != "-e .":
                     requirement_list.append(requirement)
@@ -35,13 +33,13 @@ def get_requirements()->List[str]:
 
 print(get_requirements())
 
-
+## Creating a package with metadata and dependencies of the project
 setup(
     name = "mlproject2",
     version = "0.0.1",
     author = "Prerit",
     author_email="cloudsharma909@gmail.com",
     packages = find_packages(),  ## find all the packages in the project
-    install_requires = get_requirements()  ## Installs all the libraries
+    install_requires = get_requirements()  ## Installs all the libraries mentioned in requirements.txt
 )
 

@@ -9,9 +9,13 @@ xgboost
 dill
 flask
 pymongo
+pymongo[srv]==3.6
 certifi
 
 
 
 
 #-e .
+
+
+
