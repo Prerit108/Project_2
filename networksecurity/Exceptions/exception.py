@@ -12,10 +12,10 @@ class NetworkSecurityException(Exception):
         file_name = exc_tb.tb_frame.f_code.co_filename   ## file name of error
         ## more given in custom exception handling documentation
 
-        def __str__(self):
-            return "Error occured in python script namen [{0}] line number [{1}] error message [{2}]".format(
-                self.file_name,self.lineno,str(self.error_message)
-            )
+    def __str__(self):
+        return "Error occured in python script namen [{0}] line number [{1}] error message [{2}]".format(
+            self.file_name,self.lineno,str(self.error_message)
+        )
         
     ## Checking if it is working
 # if __name__ == "__main__":
