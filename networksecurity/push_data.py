@@ -1,3 +1,4 @@
+## This file has code to push data to the mongo db
 import os
 import sys
 import json
@@ -56,12 +57,12 @@ class NetworkDataExtract():
         except Exception as ex:
             raise NetworkSecurityException(ex,sys)
         
-if __name__ == "__main__":
-    FILE_PATH = "D:/Project_2/Network_Data/phisingData.csv"
-    DATABASE = "MY_DATABASE"
-    COLLECTION = "NetworkData"
+# if __name__ == "__main__":
+#     FILE_PATH = "D:/Project_2/Network_Data/phisingData.csv"
+#     DATABASE = "MY_DATABASE"
+#     COLLECTION = "NetworkData"
 
-    n1_obj = NetworkDataExtract()
-    records = n1_obj.csv_to_json_converter(FILE_PATH)
-    no_ofrecords = n1_obj.insert_data_mongodb(records,DATABASE,COLLECTION)
-    print(no_ofrecords)
+#     n1_obj = NetworkDataExtract()
+#     records = n1_obj.csv_to_json_converter(FILE_PATH)
+#     no_ofrecords = n1_obj.insert_data_mongodb(records,DATABASE,COLLECTION)
+#     print(no_ofrecords)
