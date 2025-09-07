@@ -45,8 +45,9 @@ class NetworkDataExtract():
             ## Mongo client to connect to mongodb
             self.mongo_client = pymongo.MongoClient(MONGO_DB_URL)
             
-            ## Assigning the database and collection on mongo client
+            ## Assigning the database  on mongo client
             self.database = self.mongo_client[database]
+            ## Assigning collection to the database
             self.collection = self.database[collection]
             
             self.collection.insert_many(self.records)
