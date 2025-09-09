@@ -22,7 +22,7 @@ load_dotenv()
 MONGO_DB_URL = os.getenv("MONGO_DB_URL")
 
 class DataIngestion:
-    def __init__(self,data_ingestion_config = DataingestionConfig()):
+    def __init__(self,data_ingestion_config:DataingestionConfig):
         try : 
             self.data_ingestion_config = data_ingestion_config
 
@@ -77,7 +77,7 @@ class DataIngestion:
 
             train_set.to_csv(self.data_ingestion_config.train_file_path,index = False, header = True)
 
-            train_set.to_csv(self.data_ingestion_config.test_file_path,index = False, header = True)
+            test_set.to_csv(self.data_ingestion_config.test_file_path,index = False, header = True)
 
             logging.info("Train and test Data Exported")
 
@@ -92,8 +92,8 @@ class DataIngestion:
             ## Storing data locally
             dataframe = self.export_data_to_feature_store(dataframe)
             self.split_data(dataframe)
-            
 
+            ## storing train and test file path 
             dataingestion_artifact = Data_IngestionArtifact(
                 train_file_path = self.data_ingestion_config.train_file_path,
                 test_file_path = self.data_ingestion_config.test_file_path
