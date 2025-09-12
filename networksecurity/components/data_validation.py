@@ -14,6 +14,13 @@ import pandas as pd
 import numpy as np 
 
 class DataValidation:
+    # Using this caused an error
+    # Because train_file_path and test_file_path do not have default values, they become required arguments. using "=" make it optional, and leave it on python to run function and find default values.
+    # But when Python tries to run Data_IngestionArtifact(), it sees that the __init__ method requires two arguments (train_file_path and test_file_path) that you didn't provide. So, it immediately raises a TypeError
+    # def __init__(self,data_ingestion_artifacts = Data_IngestionArtifact(), 
+    #              data_validation_config:DataValidationConfig):
+        
+
     def __init__(self,data_ingestion_artifacts:Data_IngestionArtifact,  # I expect the data_ingestion_artifacts parameter to be an instance of the Data_IngestionArtifact class.
                  data_validation_config:DataValidationConfig):
         try : 

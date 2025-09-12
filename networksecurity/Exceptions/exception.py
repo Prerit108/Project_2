@@ -9,7 +9,7 @@ class NetworkSecurityException(Exception):
         _,_,exc_tb = error_details.exc_info()  ## skipping first 2 info (not useful) third give error details
 
         self.lineno = exc_tb.tb_lineno
-        file_name = exc_tb.tb_frame.f_code.co_filename   ## file name of error
+        self.file_name = exc_tb.tb_frame.f_code.co_filename   ## file name of error
         ## more given in custom exception handling documentation
 
     def __str__(self):
