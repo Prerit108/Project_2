@@ -24,14 +24,14 @@ class DataTransformation:
             self.data_transformation_config = data_transformation_config
 
         except Exception as ex:
-            raise NetworkSecurityException(ex,sys)
+            raise NetworkSecurityException(ex,sys) # type: ignore
     
     @staticmethod
     def read_data(file_path) -> pd.DataFrame:
         try:
             return pd.read_csv(file_path)
         except Exception as ex:
-            raise NetworkSecurityException(ex,sys)
+            raise NetworkSecurityException(ex,sys) # type: ignore
         
     def get_data_transformer_object(self)-> Pipeline:
         """
@@ -54,7 +54,7 @@ class DataTransformation:
             return processor
         
         except Exception as ex:
-            raise NetworkSecurityException(ex,sys)
+            raise NetworkSecurityException(ex,sys) # type: ignore
         
         
     def initiate_data_transformation(self)-> DataTransformationArtifact:
@@ -76,20 +76,24 @@ class DataTransformation:
 
             preprocessor = self.get_data_transformer_object()
 
+            ## Transforming the data
             preprocessor_object = preprocessor.fit(input_feature_train_df)
             transform_input_train_feature = preprocessor_object.transform(input_feature_train_df)
             ## can also use fit_transform
             transform_input_test_feature = preprocessor_object.transform(input_feature_test_df)
 
+            ## Knn imputer returns a numpy array
+            
+            ## Used Numpy array for better compatibility and efficiency
+            ## Combining input and target feature into a single numpy array
             train_arr = np.c_[transform_input_train_feature,np.array(target_feature_train_df)]   
             test_arr = np.c_[transform_input_test_feature,np.array(target_feature_test_df)] 
 
-
+            
             #save numpy array data
             save_numpy_array(self.data_transformation_config.transformed_train_file_path, array=train_arr,)
             save_numpy_array(self.data_transformation_config.transformed_test_file_path,array=test_arr,)
             save_object(self.data_transformation_config.transformed_object_file_path, preprocessor_object,)
-
 
             ## Preparing Artifacts
 
@@ -104,4 +108,4 @@ class DataTransformation:
 
 
         except Exception as ex:
-            raise NetworkSecurityException(ex,sys)
+            raise NetworkSecurityException(ex,sys) # type: ignore

@@ -6,6 +6,8 @@ import numpy as np
 
 from networksecurity.Exceptions.exception import NetworkSecurityException
 from networksecurity.Logging.logger import logging
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import r2_score
 
 def read_yaml_file(file_path:str) -> dict:
     ## Since Schema is in the form of dictionary, return it in dict
@@ -47,5 +49,53 @@ def save_object(file_path: str, obj: object) -> None:
         with open(file_path, "wb") as file_obj:
             pickle.dump(obj, file_obj)
         logging.info("Exited the save_object method of MainUtils class")
+    except Exception as ex:
+        raise NetworkSecurityException(ex,sys) from ex
+    
+def load_object(file_path:str):
+    try:
+        if not os.path.exists(file_path):
+            return Exception(f"File path {file_path}, does not exist")
+        with open(file_path,"rb") as file_obj:
+            print(file_obj)
+            return pickle.load(file_obj)
+    except Exception as ex:
+        raise NetworkSecurityException(ex,sys) from ex
+    
+def load_numpy_array_data(file_path:str):
+    """load numpy array
+    file_path: str location of the file to load
+    return loaded numpy array"""
+    try:
+        with open(file_path,"rb") as file_obj:
+            return np.load(file_obj)
+    except Exception as ex:
+        raise NetworkSecurityException(ex,sys) from ex
+
+def evaluate_models(x_train,y_train,x_test,y_test,models,params):
+    try: 
+        report = {}
+
+        for i in range(len(models)):
+            model = list(models.values())[i]
+            param = params[list(models.keys())[i]]
+            
+            grid = GridSearchCV(model,param,cv = 3)
+            grid.fit(x_train,y_train)
+
+            model.set_params(**grid.best_params_)  ## ** means the parameters passed are in the form of key value pair.It will do "key = value" in paramters
+            model.fit(x_train,y_train)  # train model with best params
+
+            y_train_pred = model.predict(x_train)
+
+            y_test_pred = model.predict(x_test)
+
+            train_model_score = r2_score(y_train, y_train_pred)
+            test_model_score = r2_score(y_test, y_test_pred)
+
+            report[list(models.keys())[i]] = test_model_score
+        
+        return report
+    
     except Exception as ex:
         raise NetworkSecurityException(ex,sys) from ex
