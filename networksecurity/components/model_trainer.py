@@ -20,6 +20,8 @@ AdaBoostClassifier,
 GradientBoostingClassifier,
 RandomForestClassifier,)
 
+import mlflow
+
 class ModelTrainer:
     def __init__(self,model_trainer_config:ModelTrainerConfig,data_transformation_artifact:DataTransformationArtifact):
         try:
@@ -28,7 +30,23 @@ class ModelTrainer:
 
         except Exception as ex:
             raise NetworkSecurityException(ex,sys)
-        
+    
+    def track_mlflow(self,best_model,classification_metrics):
+        with mlflow.start_run():
+            ##ClassificationMetricArtifact(f1_score=model_f1_score,
+            # precision_score=model_precision_score,
+            # recall_score=model_recall_score)
+
+            f1_score = classification_metrics.f1_score
+            precision_score = classification_metrics.precision_score
+            recall_score = classification_metrics.recall_score
+
+            mlflow.log_metric("f1_score",f1_score)
+            mlflow.log_metric("precision",precision_score)
+            mlflow.log_metric("recall",recall_score)
+            mlflow.sklearn.log_model(best_model,"Model")
+
+
 
     def train_model(self,x_train,y_train,x_test,y_test):
         models ={
@@ -71,30 +89,42 @@ class ModelTrainer:
         ## TO get the best model score and name from dict
         best_model_score = max(sorted(model_report.values()))
         best_model_name = list(model_report.keys())[list(model_report.values()).index(best_model_score)]
+        logging.info(f"Best Performed Model is {best_model_name}")
 
         best_model = models[best_model_name]
 
         y_train_pred = best_model.predict(x_train)
         classification_metrics_train = get_classification_score(y_true = y_train,y_pred=y_train_pred)
 
-       
+        ## Track experiments with Mlflow
+        self.track_mlflow(best_model,classification_metrics_train)
+
+
         y_test_pred = best_model.predict(x_test)
         classification_metrics_test = get_classification_score(y_true = y_test,y_pred=y_test_pred)
+        
+        ## Track experiments with Mlflow
+        self.track_mlflow(best_model,classification_metrics_train)
 
 
         preprocessor = load_object(file_path = self.data_transformation_artifact.transformed_object_file_path)
+        
+        ## Mking directory to store the model
         model_dir_path = os.path.dirname(self.model_trainer_config.trained_model_file_path)
         os.makedirs(model_dir_path,exist_ok=True)
-
+        
+        ## NetworkModel is a pipeline which preprocess inputs and predict the output by the model
+        ## NetworkModel contains a custom "Predict" function which preprocess and predict output under the same func
         Network_model = NetworkModel(preprocessor=preprocessor,model = best_model)
         save_object(self.model_trainer_config.trained_model_file_path,obj = NetworkModel)
+
 
         ## Model Trainer Artifact
         model_trainer_artifact = ModelTrainerArtifact(trained_model_file_path=self.model_trainer_config.trained_model_file_path,
                             train_metric_artifact=classification_metrics_train,
                             test_metric_artifact=classification_metrics_test)
         
-        logging.info(f"Model Trainer Rtifact {model_trainer_artifact}")
+        logging.info(f"Model Trainer Artifact {model_trainer_artifact}")
 
         return model_trainer_artifact
 
