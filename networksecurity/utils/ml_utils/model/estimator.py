@@ -14,7 +14,7 @@ class NetworkModel:
     def __init__(self,preprocessor,model):
         try:
             self.preprocessor = preprocessor
-            self.model = model
+            self.model= model
         except Exception as ex:
             raise NetworkSecurityException(ex,sys)
         
@@ -24,5 +24,5 @@ class NetworkModel:
             y_predict = self.model.predict(x_transform)
             return y_predict
         except Exception as ex:
-            raise NetworkSecurityException(ex,sys)
+            raise NetworkSecurityException(ex,sys) from ex
     

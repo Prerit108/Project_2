@@ -21,6 +21,13 @@ GradientBoostingClassifier,
 RandomForestClassifier,)
 
 import mlflow
+import dagshub
+# mlflow.set_tracking_uri("https://dagshub.com/cloudsharma909/Project_2.mlflow")
+
+
+
+
+
 
 class ModelTrainer:
     def __init__(self,model_trainer_config:ModelTrainerConfig,data_transformation_artifact:DataTransformationArtifact):
@@ -118,6 +125,8 @@ class ModelTrainer:
         Network_model = NetworkModel(preprocessor=preprocessor,model = best_model)
         save_object(self.model_trainer_config.trained_model_file_path,obj = NetworkModel)
 
+        ## Saving the final model to different location
+        save_object("final_models/model.pkl",best_model)
 
         ## Model Trainer Artifact
         model_trainer_artifact = ModelTrainerArtifact(trained_model_file_path=self.model_trainer_config.trained_model_file_path,
@@ -149,4 +158,4 @@ class ModelTrainer:
 
 
         except Exception as ex:
-            raise NetworkSecurityException(ex,sys)
+            raise NetworkSecurityException(ex,sys) from ex
